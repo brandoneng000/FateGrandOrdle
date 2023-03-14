@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,21 +9,21 @@
     <script src="./scripts/test.js"></script>
     <link rel="stylesheet" href="css/base.css">
 </head>
+
 <body>
-    Hello There
-    <p id="output">This is a paragraph!!</p>
     <!-- <input type="text" id="userInput"> -->
     <form autocomplete="off">
-        <input type="text" name="q" id="q" onKeyUp="showResults(this.value)" style="width: 250px;""/>
-        <div id="result"></div>
-        </form>
-    <br>
-    <button onclick="hello()">Function</button>
+        <div class="autocomplete" style="width:300px;">
+            <input id="myInput" type="text" name="myCountry" placeholder="Servant">
+        </div>
+    </form>
+    <button id="submitButton" style="width: 50px; height: 50px;" onclick="hello()">Submit</button>
     <p id="userOutput"></p>
     <button type="button" onclick="getServant()">Servant</button>
     <br>
     <br>
     <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
-    
+
 </body>
+
 </html>
