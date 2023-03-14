@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./scripts/test.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+    Hello There
+    <p id="output">This is a paragraph!!</p>
+    <!-- <input type="text" id="userInput"> -->
+    <form autocomplete="off">
+        <input type="text" name="q" id="q" onKeyUp="showResults(this.value)" style="width: 250px;""/>
+        <div id="result"></div>
+        </form>
+    <br>
+    <button onclick="hello()">Function</button>
+    <p id="userOutput"></p>
+    <button type="button" onclick="getServant()">Servant</button>
+    <br>
+    <br>
+    <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
+    
+</body>
+</html>
