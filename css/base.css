@@ -34,6 +34,7 @@ input[type=submit] {
     background-color: DodgerBlue;
     color: #fff;
     cursor: pointer;
+    margin-left: 30px;
 }
 
 .autocomplete-items {
@@ -64,4 +65,9 @@ input[type=submit] {
 .autocomplete-active {
     background-color: DodgerBlue !important;
     color: #ffffff;
+}
+
+.extra-info {
+    font-size: 10px;
+    opacity: 75%;
 }

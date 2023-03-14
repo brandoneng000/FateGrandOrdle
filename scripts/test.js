@@ -1,4 +1,5 @@
 var servantNameClass = getServantNamesClass();
+var chosen;
 
 function showImage() {
     let imageSRC = "https://static.atlasacademy.io/JP/CharaGraph/702200/702200b@2.png";
@@ -8,22 +9,11 @@ function showImage() {
 }
 
 async function getServant() {
-    let servant;
-    await fetch("https://fgo-servant-api.vercel.app/random-servant")
+    return await fetch("https://fgo-servant-api.vercel.app/random-servant")
         .then(response => response.json())
-        .then(data => {
-            servant = data;
-        })
-        .then(() => console.log(servant['name']));
-    let image = document.getElementById('servantImage');
-    image.style.visibility = 'visible';
-    image.src = servant["asc4_art"]
-}
-
-async function getServantNamesClass() {
-    servantNameClass = await fetch("https://fgo-servant-api.vercel.app/servant-name-class")
-        .then(response => response.json())
-    console.log(servantNameClass)
+    // let image = document.getElementById('servantImage');
+    // image.style.visibility = 'visible';
+    // image.src = servant["asc4_art"]
 }
 
 function autocomplete(inp, arr) {
@@ -33,6 +23,7 @@ function autocomplete(inp, arr) {
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("input", function (e) {
         var a, b, i, val = this.value;
+        let servantName;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
         if (!val) { return false; }
@@ -45,15 +36,32 @@ function autocomplete(inp, arr) {
         this.parentNode.appendChild(a);
         /*for each item in the array...*/
         for (i = 0; i < arr.length; i++) {
+            let servant = arr[i];
+            let servantName = servant['name'];
+            let effect = servant['np_effect'];
+            if (effect === "attackEnemyAll") {
+                effect = "AOE"
+            }
+            else if(effect === "attackEnemyOne") {
+                effect = "SINGLE"
+            }
+            else {
+                effect = "SUPPORT"
+            }
             /*check if the item starts with the same letters as the text field value:*/
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            if (servantName.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                 /*create a DIV element for each matching element:*/
                 b = document.createElement("DIV");
                 /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML = "<strong>" + servantName.substr(0, val.length) + "</strong>";
+                b.innerHTML += servantName.substr(val.length);
                 /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i].replace(/'/g,'&#x27;') + "'>";
+                b.innerHTML += "<input type='hidden' value='" + servantName.replace(/'/g, '&#x27;') + "'>";
+                b.innerHTML += "<br><span class=\"extra-info\">| RARITY: " + servant["rarity"] + 
+                                "| CLASS: " + servant["class_name"].toUpperCase() + 
+                                "<br>| NP TYPE: " + servant['np_type'].toUpperCase() + 
+                                " | NP EFFECT: " + effect + 
+                                " | ID: " + servant["collection_no"] + "</span>"
                 /*execute a function when someone clicks on the item value (DIV element):*/
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
@@ -120,11 +128,15 @@ function autocomplete(inp, arr) {
     /*execute a function when someone clicks in the document:*/
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
+        if (e.target['outerText']) {
+            console.log(e.target['outerText'])
+            chosen = e.target['outerText']
+        }
     });
 }
 
 async function getServantNamesClass() {
-    return await fetch("https://fgo-servant-api.vercel.app/servant-name-class")
+    return await fetch("https://fgo-servant-api.vercel.app/servant")
         .then((res) => res.json())
         .then(data => {
             return data
@@ -138,12 +150,20 @@ var servantNamesClasses = []
 // console.log(response)
 getServantNamesClass().then(data => {
     autocomplete(document.getElementById("myInput"), data);
+    console.log(data)
 })
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-const submitButton = document.getElementById("submitButton");
-submitButton.addEventListener("click", hello());
 
-function hello() {
-    let name = document.getElementById("myInput").value
-    console.log(name)
+function check_match() {
+    let arr = chosen.split("|");
+    let id = arr[arr.length - 1];
+    chosen = parseInt(id.replace(/^\D+/g, ''));
+    console.log(chosen)
+    getServant()
+        .then(data => {
+            console.log(data)
+            if(data['collection_no'] === chosen) {
+                alert("You Win!!!");
+            }
+        })
 }

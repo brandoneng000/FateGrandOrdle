@@ -12,14 +12,14 @@
 
 <body>
     <!-- <input type="text" id="userInput"> -->
-    <form autocomplete="off">
+    <form autocomplete="off" onsubmit="return false;">
         <div class="autocomplete" style="width:300px;">
-            <input id="myInput" type="text" name="myCountry" placeholder="Servant">
+            <input id="myInput" type="text" placeholder="Servant">
         </div>
+        <input id="submitButton" type="submit" onclick="check_match()"></button>
     </form>
-    <button id="submitButton" style="width: 50px; height: 50px;" onclick="hello()">Submit</button>
     <p id="userOutput"></p>
-    <button type="button" onclick="getServant()">Servant</button>
+    <!-- <button type="button" onclick="getServant()">Servant</button> -->
     <br>
     <br>
     <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
