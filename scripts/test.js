@@ -24,8 +24,20 @@ function showImage() {
 }
 
 async function initialize() {
+    let date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
+    let checkDate = localStorage.getItem("date");
+    if (date !== checkDate) {
+        localStorage.removeItem("dailyServant");
+        localStorage.removeItem("dailyImage");
+        localStorage.removeItem("gameOver");
+        localStorage.removeItem("attemptServants");
+        localStorage.removeItem("attemptsRemaining");
+        localStorage.removeItem("dailyCollectionNum");
+    }
+
     dailyServant = JSON.parse(localStorage.getItem("dailyServant"));
     dailyImage = localStorage.getItem("dailyImage");
+    dailyCollectionNum = parseInt(localStorage.getItem("dailyCollectionNum"))
     gameOver = (localStorage.getItem("gameOver") === 'true');
     if(dailyServant === null) {
         dailyServant = [];
@@ -42,16 +54,13 @@ async function initialize() {
     if(attemptServants !== null) {
         attemptServants = JSON.parse(attemptServants)
         for(let i = 0; i < attemptServants.length; i++) {
-            console.log(attemptServants[i]);
             insertNewServant(dailyServant, attemptServants[i]);
         }
     }
     else {
         attemptServants = [];
     }
-    console.log(attemptsRemaining);
     checkGameStatus();
-    // localStorage.clear()
 }
 
 async function getServant() {
@@ -82,6 +91,7 @@ async function getServant() {
     dailyServant.push(dailyNPEffect);
     localStorage.setItem("dailyServant", JSON.stringify(dailyServant));
     localStorage.setItem("dailyImage", dailyImage);
+    localStorage.setItem("dailyCollectionNum", dailyCollectionNum);
 }
 
 function autocomplete(inp, arr) {
@@ -216,7 +226,6 @@ async function getServantNamesClass() {
 
 getServantNamesClass().then(data => {
     autocomplete(document.getElementById("myInput"), data);
-    console.log(data)
 })
 
 function checkMatch() {
@@ -261,8 +270,6 @@ function compareServants(daily, chosen) {
 function insertNewServant(daily, chosen) {
     let b = document.createElement('div');
     let element = document.getElementById('guessAttempts');
-    console.log(daily);
-    console.log(chosen);
     for(let i = 0; i < daily.length; i++) {
         b.append(compareServants(daily[i], chosen[i]));
     }
@@ -270,7 +277,22 @@ function insertNewServant(daily, chosen) {
 }
 
 function checkGameStatus() {
+    console.log(gameOver)
     if(gameOver) {
         showImage();
     }
+}
+
+function getDate(today) {
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+
+    today = mm + '/' + dd + '/' + yyyy;
+    localStorage.setItem("date", today);
+    return today
+}
+
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
 }
