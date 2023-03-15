@@ -24,8 +24,8 @@ function showImage() {
 }
 
 async function initialize() {
-    let date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
     let checkDate = localStorage.getItem("date");
+    let date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
     if (date !== checkDate) {
         localStorage.removeItem("dailyServant");
         localStorage.removeItem("dailyImage");
