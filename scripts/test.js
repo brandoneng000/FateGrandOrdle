@@ -1,19 +1,87 @@
 var servantNameClass = getServantNamesClass();
-var chosen;
+var dailyImage;
+var dailyCollectionNum;
+var dailyName;
+var dailyRarity;
+var dailyClass;
+var dailyNPType;
+var dailyNPEffect;
+var chosenCollectionNum;
+var chosenName;
+var chosenRarity;
+var chosenClass;
+var chosenNPType;
+var chosenNPEffect;
+var attemptsRemaining = 8;
+var gameOver = false;
+var attemptServants = [];
+var dailyServant = [];
 
 function showImage() {
-    let imageSRC = "https://static.atlasacademy.io/JP/CharaGraph/702200/702200b@2.png";
     let image = document.getElementById('servantImage');
     image.style.visibility = 'visible';
-    image.src = imageSRC;
+    image.src = dailyImage;
+}
+
+async function initialize() {
+    dailyServant = JSON.parse(localStorage.getItem("dailyServant"));
+    dailyImage = localStorage.getItem("dailyImage");
+    gameOver = (localStorage.getItem("gameOver") === 'true');
+    if(dailyServant === null) {
+        dailyServant = [];
+        await getServant();
+    }
+    attemptServants = localStorage.getItem("attemptServants");
+    let check = localStorage.getItem("attemptsRemaining");
+    if(check === null) {
+        attemptsRemaining = 8;
+    }
+    else {
+        attemptsRemaining = check;
+    }
+    if(attemptServants !== null) {
+        attemptServants = JSON.parse(attemptServants)
+        for(let i = 0; i < attemptServants.length; i++) {
+            console.log(attemptServants[i]);
+            insertNewServant(dailyServant, attemptServants[i]);
+        }
+    }
+    else {
+        attemptServants = [];
+    }
+    console.log(attemptsRemaining);
+    checkGameStatus();
+    // localStorage.clear()
 }
 
 async function getServant() {
-    return await fetch("https://fgo-servant-api.vercel.app/random-servant")
+    await fetch("https://fgo-servant-api.vercel.app/random-servant")
         .then(response => response.json())
-    // let image = document.getElementById('servantImage');
-    // image.style.visibility = 'visible';
-    // image.src = servant["asc4_art"]
+        .then(data => {
+            dailyCollectionNum = data['collection_no'];
+            dailyName = data['name'];
+            dailyClass = data['class_name'];
+            dailyRarity = data['rarity'];
+            dailyNPType = data['np_type'];
+            dailyNPEffect = data['np_effect'];
+            if (dailyNPEffect === "attackEnemyAll") {
+                dailyNPEffect = "ALL"
+            }
+            else if(dailyNPEffect === "attackEnemyOne") {
+                dailyNPEffect = "SINGLE"
+            }
+            else {
+                dailyNPEffect = "SUPPORT"
+            }
+            dailyImage = data['asc4_art'];
+        })
+    dailyServant.push(dailyName);
+    dailyServant.push(dailyRarity);
+    dailyServant.push(dailyClass);
+    dailyServant.push(dailyNPType);
+    dailyServant.push(dailyNPEffect);
+    localStorage.setItem("dailyServant", JSON.stringify(dailyServant));
+    localStorage.setItem("dailyImage", dailyImage);
 }
 
 function autocomplete(inp, arr) {
@@ -40,7 +108,7 @@ function autocomplete(inp, arr) {
             let servantName = servant['name'];
             let effect = servant['np_effect'];
             if (effect === "attackEnemyAll") {
-                effect = "AOE"
+                effect = "ALL"
             }
             else if(effect === "attackEnemyOne") {
                 effect = "SINGLE"
@@ -66,6 +134,12 @@ function autocomplete(inp, arr) {
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
                     inp.value = this.getElementsByTagName("input")[0].value;
+                    chosenCollectionNum = servant["collection_no"];
+                    chosenName = servantName.replace(/'/g, '&#x27;');
+                    chosenRarity = servant["rarity"];
+                    chosenClass = servant["class_name"];
+                    chosenNPType = servant['np_type'];
+                    chosenNPEffect = effect;
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
                     closeAllLists();
@@ -128,10 +202,6 @@ function autocomplete(inp, arr) {
     /*execute a function when someone clicks in the document:*/
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
-        if (e.target['outerText']) {
-            console.log(e.target['outerText'])
-            chosen = e.target['outerText']
-        }
     });
 }
 
@@ -144,26 +214,63 @@ async function getServantNamesClass() {
 
 }
 
-/*An array containing all the country names in the world:*/
-var servantNamesClasses = []
-// response = getServantNamesClass()
-// console.log(response)
 getServantNamesClass().then(data => {
     autocomplete(document.getElementById("myInput"), data);
     console.log(data)
 })
-/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
 
-function check_match() {
-    let arr = chosen.split("|");
-    let id = arr[arr.length - 1];
-    chosen = parseInt(id.replace(/^\D+/g, ''));
-    console.log(chosen)
-    getServant()
-        .then(data => {
-            console.log(data)
-            if(data['collection_no'] === chosen) {
-                alert("You Win!!!");
-            }
-        })
+function checkMatch() {
+    if(gameOver) {
+        return;
+    }
+    let chosenServant = [];
+    chosenServant.push(chosenName);
+    chosenServant.push(chosenRarity);
+    chosenServant.push(chosenClass);
+    chosenServant.push(chosenNPType);
+    chosenServant.push(chosenNPEffect);
+
+    attemptServants.push(chosenServant);
+    insertNewServant(dailyServant, chosenServant);
+    if(dailyCollectionNum === chosenCollectionNum) {
+        attemptsRemaining = 0;
+        gameOver = true;
+    }
+    else {
+        attemptsRemaining -= 1;
+        if(attemptsRemaining === 0) {
+            gameOver = true;
+            insertNewServant(dailyServant, dailyServant);
+            attemptServants.push(dailyServant);        
+        }
+    }
+    checkGameStatus();
+    localStorage.setItem("attemptsRemaining", attemptsRemaining);
+    localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
+    localStorage.setItem("gameOver", gameOver)
+}
+
+function compareServants(daily, chosen) {
+    let p = document.createElement('p');
+    let color = daily === chosen ? "green": "red";
+    p.style.backgroundColor = color;
+    p.innerHTML = String(chosen).toUpperCase();
+    return p
+}
+
+function insertNewServant(daily, chosen) {
+    let b = document.createElement('div');
+    let element = document.getElementById('guessAttempts');
+    console.log(daily);
+    console.log(chosen);
+    for(let i = 0; i < daily.length; i++) {
+        b.append(compareServants(daily[i], chosen[i]));
+    }
+    element.appendChild(b)
+}
+
+function checkGameStatus() {
+    if(gameOver) {
+        showImage();
+    }
 }

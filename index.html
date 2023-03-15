@@ -10,19 +10,18 @@
     <link rel="stylesheet" href="css/base.css">
 </head>
 
-<body>
+<body onload="initialize()">
     <!-- <input type="text" id="userInput"> -->
+    <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
     <form autocomplete="off" onsubmit="return false;">
         <div class="autocomplete" style="width:300px;">
             <input id="myInput" type="text" placeholder="Servant">
         </div>
-        <input id="submitButton" type="submit" onclick="check_match()"></button>
+        <input id="submitButton" type="submit" onclick="checkMatch()"></button>
     </form>
     <p id="userOutput"></p>
-    <!-- <button type="button" onclick="getServant()">Servant</button> -->
-    <br>
-    <br>
-    <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
+    <div id="guessAttempts" class="guess"></div>
+    
 
 </body>
 

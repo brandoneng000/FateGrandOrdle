@@ -71,3 +71,28 @@ input[type=submit] {
     font-size: 10px;
     opacity: 75%;
 }
+
+div.guess {
+    /* border: 2px solid white; */
+    /* height: 100px; */
+    display: inline-block;
+}
+
+div.guess div{
+    border: 2px solid white;
+    height: 100px;
+    display: flex;
+}
+
+div.guess p {
+    border: 1px solid white;
+    width: 200px;
+    padding: 5px;
+    margin: 0;
+    word-wrap: break-word;
+    /* text-align: center;
+    vertical-align: middle; */
+    align-items:center;
+    justify-content:center;
+    
+}
