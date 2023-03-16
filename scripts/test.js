@@ -232,6 +232,14 @@ function checkMatch() {
     if(gameOver) {
         return;
     }
+    if(chosenCollectionNum === undefined) {
+        return;
+    }
+    checkText = document.getElementById("myInput").value
+    console.log(chosenName)
+    if(checkText !== chosenName.replace(new RegExp("&"+"#"+"x27;", "g"), "'")) {
+        return
+    }
     let chosenServant = [];
     chosenServant.push(chosenName);
     chosenServant.push(chosenRarity);
@@ -253,6 +261,7 @@ function checkMatch() {
             attemptServants.push(dailyServant);        
         }
     }
+    document.getElementById("myInput").value = ''
     checkGameStatus();
     localStorage.setItem("attemptsRemaining", attemptsRemaining);
     localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
