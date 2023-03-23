@@ -5,7 +5,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
 
 /* Full-width input fields */
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=email] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -130,71 +130,75 @@ hr {
 <body>
 
 <h2>Modal Signup Form</h2>
+<div id="user-info"></div>
+  <button class="signup" onclick="document.getElementById('signUp').style.display='block'" style="width:auto;">Sign Up</button>
 
-<button class="signup" onclick="document.getElementById('signUp').style.display='block'" style="width:auto;">Sign Up</button>
-
-<div id="signUp" class="modal">
-  
-  <form class="modal-content" onsubmit="return false;">
-    <div class="container">
-      
-      <h1>Sign Up</h1>
-      <span onclick="document.getElementById('signUp').style.display='none'" class="close" title="Close Modal">&times;</span>
-      <p>Please fill in this form to create an account.</p>
-      <hr>
-      <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Enter Email" name="email" required>
-
-      <label for="psw"><b>Password</b></label>
-      <input id="password" type="password" placeholder="Enter Password" name="psw" required>
-
-      <label for="psw-repeat"><b>Repeat Password</b></label>
-      <input id="passwordConfirm" type="password" placeholder="Repeat Password" name="psw-repeat" required>
-      
-      <label>
-        <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
-      </label>
-
-      <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
-
-      <div class="clearfix">
-        <button type="button" onclick="document.getElementById('signUp').style.display='none'" class="cancelSignBtn">Cancel</button>
-        <button type="submit" class="signupbtn" onclick="test">Sign Up</button>
-      </div>
-    </div>
-  </form>
-</div>
-
-<button onclick="document.getElementById('login').style.display='block'" style="width:auto;">Login</button>
-
-<div id="login" class="modal">
-  
-  <form class="modal-content" method="post">
-    <span onclick="document.getElementById('login').style.display='none'" class="close" title="Close Modal">&times;</span>
-
-    <div class="container">
-      <label for="uname"><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="uname" required>
-
-      <label for="psw"><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="psw" required>
+  <div id="signUp" class="modal">
+    
+    <form class="modal-content" onsubmit="return false;">
+      <div class="container">
         
-      <button type="submit" onclick="test()">Login</button>
-      <label>
-        <input type="checkbox" checked="checked" name="remember"> Remember me
-      </label>
-    </div>
+        <h1>Sign Up</h1>
+        <span onclick="document.getElementById('signUp').style.display='none'" class="close" title="Close Modal">&times;</span>
+        <p>Please fill in this form to create an account.</p>
+        <hr>
+        <label for="email"><b>Email</b></label>
+        <input type="email" placeholder="Enter Email" name="email" required>
 
-    <div class="container" style="background-color:#f1f1f1">
-      <button type="button" onclick="document.getElementById('login').style.display='none'" class="cancelbtn">Cancel</button>
-    </div>
-  </form>
+        <label for="psw"><b>Password</b></label>
+        <input id="password" type="password" placeholder="Enter Password" name="psw" required>
+
+        <label for="psw-repeat"><b>Repeat Password</b></label>
+        <input id="passwordConfirm" type="password" placeholder="Repeat Password" name="psw-repeat" required>
+        
+        <label>
+          <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
+        </label>
+
+        <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
+
+        <div class="clearfix">
+          <button type="button" onclick="document.getElementById('signUp').style.display='none'" class="cancelSignBtn">Cancel</button>
+          <button type="submit" class="signupbtn" onclick="test">Sign Up</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <button onclick="document.getElementById('login').style.display='block'" style="width:auto;">Login</button>
+
+  <div id="login" class="modal">
+    
+    <form class="modal-content" method="post">
+      <span onclick="document.getElementById('login').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+      <div class="container">
+        <label for="uname"><b>Username</b></label>
+        <input id="login-email" type="text" placeholder="Enter Username" name="uname" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input id="login-psw" type="password" placeholder="Enter Password" name="psw" required>
+          
+        <button type="submit" onclick="test()">Login</button>
+        <label>
+          <input type="checkbox" checked="checked" name="remember"> Remember me
+        </label>
+      </div>
+
+      <div class="container" style="background-color:#f1f1f1">
+        <button type="button" onclick="document.getElementById('login').style.display='none'" class="cancelbtn">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
-
 <script>
 // Get the modal
 var signup = document.getElementById('signUp');
 var login = document.getElementById('login');
+var token;
+var userData;
+const loginURL = "http://127.0.0.1:5000/login";
+const userDataURL = "http://127.0.0.1:5000/user";
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
@@ -202,6 +206,7 @@ window.onclick = function(event) {
     signup.style.display = "none";
   }
   if (event.target == login) {
+    document.getElementById("login-psw").value = "";
     login.style.display = "none";
   }
 }
@@ -214,6 +219,7 @@ function test() {
 login.addEventListener("submit", (event) => {
   event.preventDefault();
   login.style.display = "none";
+  userLogin();
 });
 
 signup.addEventListener("submit", (event) => {
@@ -238,6 +244,44 @@ function validatePassword(){
 }
 password.onchange = validatePassword;
 passwordConfirm.onkeyup = validatePassword;
+
+async function userLogin() {
+  let data = new FormData();
+  let email = document.getElementById("login-email").value;
+  let psw = document.getElementById("login-psw").value;
+
+  data.append("email", email);
+  data.append("password", psw);
+
+  await fetch(loginURL, {
+    method: "POST",
+    body: data
+  })
+  .then((response) => {
+    if (response.status === 201) {
+      return response.json();
+    }
+  })
+  .then((data) => {
+    token = data["token"];
+    getUserInfo();
+  })
+  
+}
+
+async function getUserInfo() {
+  await fetch(userDataURL, {
+    method: "GET",
+    headers: {
+      "x-access-token": token
+    }
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      userData = data; 
+    });
+}
 
 </script>
 
