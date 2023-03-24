@@ -48,7 +48,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 /* Full-width input fields */
-input[type=text], input[type=password], input[type=email] {
+input.testing[type=text], input.testing[type=password], input.testing[type=email] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -58,7 +58,7 @@ input[type=text], input[type=password], input[type=email] {
 }
 
 /* Add a background color when the inputs get focus */
-input[type=text]:focus, input[type=password]:focus {
+input.testing[type=text]:focus, input.testing[type=password]:focus {
   background-color: #ddd;
   outline: none;
 }
@@ -191,19 +191,19 @@ hr {
         <p>Please fill in this form to create an account.</p>
         <hr>
         <label for="name"><b>Display Name</b></label>
-        <input id="display-name" type="text" placeholder="Display name" name="Display name" required>
+        <input class="testing" id="display-name" type="text" placeholder="Display name" name="Display name" required>
 
         <label for="email"><b>Email</b></label>
-        <input id="user-email" type="email" placeholder="Enter Email" name="email" required>
+        <input class="testing" id="user-email" type="email" placeholder="Enter Email" name="email" required>
 
         <label for="psw"><b>Password</b></label>
-        <input id="password" type="password" placeholder="Enter Password" name="psw" required>
+        <input class="testing" id="password" type="password" placeholder="Enter Password" name="psw" required>
 
         <label for="psw-repeat"><b>Repeat Password</b></label>
-        <input id="passwordConfirm" type="password" placeholder="Repeat Password" name="psw-repeat" required>
+        <input class="testing" id="passwordConfirm" type="password" placeholder="Repeat Password" name="psw-repeat" required>
 
         <label>
-          <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
+          <input class="testing" type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
         </label>
 
         <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
@@ -227,14 +227,14 @@ hr {
 
       <div class="container">
         <label for="email"><b>Email</b></label>
-        <input id="login-email" type="email" placeholder="Enter Email" name="email" required>
+        <input class="testing" id="login-email" type="email" placeholder="Enter Email" name="email" required>
 
         <label for="psw"><b>Password</b></label>
-        <input id="login-psw" type="password" placeholder="Enter Password" name="psw" required>
+        <input class="testing" id="login-psw" type="password" placeholder="Enter Password" name="psw" required>
 
         <button type="submit" onclick="test()">Login</button>
         <label>
-          <input type="checkbox" checked="checked" name="remember"> Remember me
+          <input class="testing" type="checkbox" checked="checked" name="remember"> Remember me
         </label>
       </div>
 

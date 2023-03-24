@@ -16,6 +16,9 @@ var attemptsRemaining = 8;
 var gameOver = false;
 var attemptServants = [];
 var dailyServant = [];
+var userData;
+
+var token;
 
 function showImage() {
     let image = document.getElementById('servantImage');
@@ -24,6 +27,8 @@ function showImage() {
 }
 
 async function initialize() {
+    token = localStorage.getItem("token");
+    userData = JSON.parse(localStorage.getItem("userData"));
     let checkDate = localStorage.getItem("date");
     let date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
     if (date !== checkDate) {

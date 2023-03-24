@@ -11,18 +11,238 @@
 </head>
 
 <body onload="initialize()">
+    <div id="snackbar">Some text some message..</div>
+
+    <div id="user-info">
+        <button class="signup" onclick="document.getElementById('signUp').style.display='block'"
+            style="width:auto;">Sign
+            Up</button>
+
+        <div id="signUp" class="modal">
+
+            <form class="modal-content" onsubmit="return false;">
+                <div class="container">
+
+                    <h1>Sign Up</h1>
+                    <span onclick="document.getElementById('signUp').style.display='none'" class="close"
+                        title="Close Modal">&times;</span>
+                    <p>Please fill in this form to create an account.</p>
+                    <hr>
+                    <label for="name"><b>Display Name</b></label>
+                    <input class="testing" id="display-name" type="text" placeholder="Display name" name="Display name"
+                        required>
+
+                    <label for="email"><b>Email</b></label>
+                    <input class="testing" id="user-email" type="email" placeholder="Enter Email" name="email" required>
+
+                    <label for="psw"><b>Password</b></label>
+                    <input class="testing" id="password" type="password" placeholder="Enter Password" name="psw"
+                        required>
+
+                    <label for="psw-repeat"><b>Repeat Password</b></label>
+                    <input class="testing" id="passwordConfirm" type="password" placeholder="Repeat Password"
+                        name="psw-repeat" required>
+
+                    <label>
+                        <input class="testing" type="checkbox" checked="checked" name="remember"
+                            style="margin-bottom:15px"> Remember me
+                    </label>
+
+                    <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.
+                    </p>
+
+                    <div class="clearfix">
+                        <button type="button" onclick="document.getElementById('signUp').style.display='none'"
+                            class="cancelSignBtn">Cancel</button>
+                        <button type="submit" class="signupbtn" onclick="test">Sign Up</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <button onclick="document.getElementById('login').style.display='block'" style="width:auto;">Login</button>
+
+        <div id="login" class="modal">
+
+            <form class="modal-content" method="post">
+                <span onclick="document.getElementById('login').style.display='none'" class="close"
+                    title="Close Modal">&times;</span>
+
+                <div class="container">
+                    <label for="email"><b>Email</b></label>
+                    <input class="testing" id="login-email" type="email" placeholder="Enter Email" name="email"
+                        required>
+
+                    <label for="psw"><b>Password</b></label>
+                    <input class="testing" id="login-psw" type="password" placeholder="Enter Password" name="psw"
+                        required>
+
+                    <button type="submit">Login</button>
+                    <label>
+                        <input class="testing" type="checkbox" checked="checked" name="remember"> Remember me
+                    </label>
+                </div>
+
+                <div class="container" style="background-color:#f1f1f1">
+                    <button type="button" onclick="document.getElementById('login').style.display='none'"
+                        class="cancelbtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <span id="welcome-message" style="visibility: hidden;"></span>
+        <button style="width:auto; visibility: hidden;" onclick="location.reload()">Log out</button>
+    </div>
     <!-- <input type="text" id="userInput"> -->
     <img id="servantImage" src="" width="384" height="543" style="visibility: hidden;">
     <form autocomplete="off" onsubmit="return false;">
         <div class="autocomplete" style="width:300px;">
-            <input id="myInput" type="text" placeholder="Servant">
+            <input class="servant" id="myInput" type="text" placeholder="Servant">
         </div>
-        <input id="submitButton" type="submit" onclick="checkMatch()"></button>
+        <input class="servant" id="submitButton" type="submit-servant" onclick="checkMatch()" value="Submit" disabled>
     </form>
     <p id="userOutput"></p>
     <div id="guessAttempts" class="guess"></div>
-    
 
 </body>
+<script id="modals">
+    var signup = document.getElementById('signUp');
+    var login = document.getElementById('login');
+    var token;
+    var userData;
+    const loginURL = "http://127.0.0.1:5000/login";
+    const userDataURL = "http://127.0.0.1:5000/user";
+    const signUpURL = "http://127.0.0.1:5000/signup";
+
+    // notification function
+    function snackMessage(message) {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        x.innerHTML = message;
+        setTimeout(function () {
+            x.className = x.className.replace("show", "");
+        }, 2000);
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == signup) {
+            signup.style.display = "none";
+        }
+        if (event.target == login) {
+            document.getElementById("login-psw").value = "";
+            login.style.display = "none";
+        }
+    }
+
+    // Add 'submit' event handler
+    login.addEventListener("submit", (event) => {
+        event.preventDefault();
+        login.style.display = "none";
+        userLogin();
+    });
+
+    signup.addEventListener("submit", (event) => {
+        if (validatePassword()) {
+            return
+        }
+        event.preventDefault();
+        createUser();
+        signup.style.display = "none";
+    });
+
+    var password = document.getElementById("password")
+    var passwordConfirm = document.getElementById("passwordConfirm");
+
+    function validatePassword() {
+        if (password.value != passwordConfirm.value) {
+            passwordConfirm.setCustomValidity("Passwords Don't Match");
+        } else {
+            passwordConfirm.setCustomValidity('');
+        }
+
+        return password.value != passwordConfirm.value
+    }
+    password.onchange = validatePassword;
+    passwordConfirm.onkeyup = validatePassword;
+
+    async function userLogin() {
+        let data = new FormData();
+        let email = document.getElementById("login-email").value;
+        let psw = document.getElementById("login-psw").value;
+
+        data.append("email", email);
+        data.append("password", psw);
+
+        await fetch(loginURL, {
+            method: "POST",
+            body: data
+        })
+            .then((response) => {
+                if (response.status === 201) {
+                    return response.json();
+                }
+                else if (response.status === 401) {
+                    snackMessage("Invalid Email");
+                }
+                else if (response.status === 403) {
+                    snackMessage("Invalid password");
+                }
+            })
+            .then((data) => {
+                try {
+                    token = data["token"];
+                    localStorage.setItem("token", token);
+                    if (token) {
+                        getUserInfo();
+                    }
+                }
+                catch (TypeError) {
+                    // no token
+                }
+            })
+
+    }
+
+    async function getUserInfo() {
+        await fetch(userDataURL, {
+            method: "GET",
+            headers: {
+                "x-access-token": token
+            }
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                userData = data;
+                localStorage.setItem("userData", JSON.stringify(userData));
+            });
+    }
+
+    async function createUser() {
+        let data = new FormData();
+        let email = document.getElementById("user-email").value;
+        let psw = document.getElementById("password").value;
+        let displayName = document.getElementById("display-name").value;
+
+        data.append("name", displayName);
+        data.append("email", email);
+        data.append("password", psw);
+
+        await fetch(signUpURL, {
+            method: "POST",
+            body: data
+        })
+            .then((response) => {
+                console.log(response.text())
+                if (response.status === 201) {
+                    snackMessage("User created");
+                }
+                else if (response.status === 202) {
+                    snackMessage("User exists. Please log in.")
+                }
+            })
+    }
+</script>
 
 </html>
