@@ -130,16 +130,19 @@ hr {
 <body>
 
 <h2>Modal Signup Form</h2>
-<div id="user-info"></div>
-  <button class="signup" onclick="document.getElementById('signUp').style.display='block'" style="width:auto;">Sign Up</button>
+
+<div id="user-info">
+  <button class="signup" onclick="document.getElementById('signUp').style.display='block'" style="width:auto;">Sign
+    Up</button>
 
   <div id="signUp" class="modal">
-    
+
     <form class="modal-content" onsubmit="return false;">
       <div class="container">
-        
+
         <h1>Sign Up</h1>
-        <span onclick="document.getElementById('signUp').style.display='none'" class="close" title="Close Modal">&times;</span>
+        <span onclick="document.getElementById('signUp').style.display='none'" class="close"
+          title="Close Modal">&times;</span>
         <p>Please fill in this form to create an account.</p>
         <hr>
         <label for="email"><b>Email</b></label>
@@ -150,7 +153,7 @@ hr {
 
         <label for="psw-repeat"><b>Repeat Password</b></label>
         <input id="passwordConfirm" type="password" placeholder="Repeat Password" name="psw-repeat" required>
-        
+
         <label>
           <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
         </label>
@@ -158,7 +161,8 @@ hr {
         <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
 
         <div class="clearfix">
-          <button type="button" onclick="document.getElementById('signUp').style.display='none'" class="cancelSignBtn">Cancel</button>
+          <button type="button" onclick="document.getElementById('signUp').style.display='none'"
+            class="cancelSignBtn">Cancel</button>
           <button type="submit" class="signupbtn" onclick="test">Sign Up</button>
         </div>
       </div>
@@ -168,9 +172,10 @@ hr {
   <button onclick="document.getElementById('login').style.display='block'" style="width:auto;">Login</button>
 
   <div id="login" class="modal">
-    
+
     <form class="modal-content" method="post">
-      <span onclick="document.getElementById('login').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <span onclick="document.getElementById('login').style.display='none'" class="close"
+        title="Close Modal">&times;</span>
 
       <div class="container">
         <label for="uname"><b>Username</b></label>
@@ -178,7 +183,7 @@ hr {
 
         <label for="psw"><b>Password</b></label>
         <input id="login-psw" type="password" placeholder="Enter Password" name="psw" required>
-          
+
         <button type="submit" onclick="test()">Login</button>
         <label>
           <input type="checkbox" checked="checked" name="remember"> Remember me
@@ -186,11 +191,16 @@ hr {
       </div>
 
       <div class="container" style="background-color:#f1f1f1">
-        <button type="button" onclick="document.getElementById('login').style.display='none'" class="cancelbtn">Cancel</button>
+        <button type="button" onclick="document.getElementById('login').style.display='none'"
+          class="cancelbtn">Cancel</button>
       </div>
     </form>
   </div>
+
+  <span id="welcome-message" style="visibility: hidden;"></span>
+  <button style="width:auto; visibility: hidden;" onclick="location.reload()">Log out</button>
 </div>
+
 <script>
 // Get the modal
 var signup = document.getElementById('signUp');
