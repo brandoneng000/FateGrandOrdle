@@ -41,6 +41,15 @@ input.servant[type=submit-servant] {
     text-align: center;
 }
 
+button.servant {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+  margin-left: 5px;
+  width: 80px;
+  text-align: center;
+}
+
 .autocomplete-items {
     position: absolute;
     border: 1px solid #d4d4d4;

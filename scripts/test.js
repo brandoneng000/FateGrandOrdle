@@ -18,7 +18,21 @@ var attemptServants = [];
 var dailyServant = [];
 var userData;
 
+var checkDate;
+var date;
+
+var wins = 0;
+var games = 0;
+
+var signup = document.getElementById('signUp');
+var login = document.getElementById('login');
 var token;
+var userData;
+const loginURL = "http://127.0.0.1:5000/login";
+const userDataURL = "http://127.0.0.1:5000/user";
+const signUpURL = "http://127.0.0.1:5000/signup";
+const updateUserURL = "http://127.0.0.1:5000/user-update";
+const checkTokenURL = "http://127.0.0.1:5000/check-token";
 
 function showImage() {
     let image = document.getElementById('servantImage');
@@ -26,11 +40,50 @@ function showImage() {
     image.src = dailyImage;
 }
 
+function changeToken() {
+    let test = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOiI3NzRjNzU4YS03ZjFmLTRiZDItODhiMS05ZDhiOWE4MjllNjgiLCJleHAiOjE1MTYyMzkwMjJ9.jg0UL8ENJfv-gCl4hmDyg0O4ba2V1aOyV2xN3xUNYJA";
+    localStorage.setItem("token", test);
+}
+
 async function initialize() {
+    wins = parseInt(localStorage.getItem("wins"));
+    if (isNaN(wins)) {
+        wins = 0;
+    }
+    games = parseInt(localStorage.getItem("games"));
+    if (isNaN(games)) {
+        games = 0;
+    }
+
+
     token = localStorage.getItem("token");
+    if (token) {
+        await fetch(checkTokenURL, {
+            method: "GET",
+            headers: {
+                "x-access-token": token
+            }
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json()
+            }
+            else {
+                localStorage.setItem("token", "")
+                location.reload();
+            }
+            
+        })
+        .then((data) => {
+            console.log(data["name"]);
+        })
+
+    }
+
     userData = JSON.parse(localStorage.getItem("userData"));
-    let checkDate = localStorage.getItem("date");
-    let date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
+    userStatus();
+    checkDate = localStorage.getItem("date");
+    date = getDate(convertTZ(new Date(), "America/Los_Angeles"));
     if (date !== checkDate) {
         localStorage.removeItem("dailyServant");
         localStorage.removeItem("dailyImage");
@@ -44,21 +97,21 @@ async function initialize() {
     dailyImage = localStorage.getItem("dailyImage");
     dailyCollectionNum = parseInt(localStorage.getItem("dailyCollectionNum"))
     gameOver = (localStorage.getItem("gameOver") === 'true');
-    if(dailyServant === null) {
+    if (dailyServant === null) {
         dailyServant = [];
         await getServant();
     }
     attemptServants = localStorage.getItem("attemptServants");
     let check = localStorage.getItem("attemptsRemaining");
-    if(check === null) {
+    if (check === null) {
         attemptsRemaining = 8;
     }
     else {
         attemptsRemaining = check;
     }
-    if(attemptServants !== null) {
+    if (attemptServants !== null) {
         attemptServants = JSON.parse(attemptServants)
-        for(let i = 0; i < attemptServants.length; i++) {
+        for (let i = 0; i < attemptServants.length; i++) {
             insertNewServant(dailyServant, attemptServants[i]);
         }
     }
@@ -81,7 +134,7 @@ async function getServant() {
             if (dailyNPEffect === "attackEnemyAll") {
                 dailyNPEffect = "ALL"
             }
-            else if(dailyNPEffect === "attackEnemyOne") {
+            else if (dailyNPEffect === "attackEnemyOne") {
                 dailyNPEffect = "SINGLE"
             }
             else {
@@ -125,7 +178,7 @@ function autocomplete(inp, arr) {
             if (effect === "attackEnemyAll") {
                 effect = "ALL"
             }
-            else if(effect === "attackEnemyOne") {
+            else if (effect === "attackEnemyOne") {
                 effect = "SINGLE"
             }
             else {
@@ -140,11 +193,11 @@ function autocomplete(inp, arr) {
                 b.innerHTML += servantName.substr(val.length);
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + servantName.replace(/'/g, '&#x27;') + "'>";
-                b.innerHTML += "<br><span class=\"extra-info\">| RARITY: " + servant["rarity"] + 
-                                "| CLASS: " + servant["class_name"].toUpperCase() + 
-                                "<br>| NP TYPE: " + servant['np_type'].toUpperCase() + 
-                                " | NP EFFECT: " + effect + 
-                                " | ID: " + servant["collection_no"] + "</span>"
+                b.innerHTML += "<br><span class=\"extra-info\">| RARITY: " + servant["rarity"] +
+                    "| CLASS: " + servant["class_name"].toUpperCase() +
+                    "<br>| NP TYPE: " + servant['np_type'].toUpperCase() +
+                    " | NP EFFECT: " + effect +
+                    " | ID: " + servant["collection_no"] + "</span>"
                 /*execute a function when someone clicks on the item value (DIV element):*/
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
@@ -233,16 +286,16 @@ getServantNamesClass().then(data => {
     autocomplete(document.getElementById("myInput"), data);
 })
 
-function checkMatch() {
-    if(gameOver) {
+async function checkMatch() {
+    if (gameOver) {
         return;
     }
-    if(chosenCollectionNum === undefined) {
+    if (chosenCollectionNum === undefined) {
         return;
     }
     checkText = document.getElementById("myInput").value
     console.log(chosenName)
-    if(checkText !== chosenName.replace(new RegExp("&"+"#"+"x27;", "g"), "'")) {
+    if (checkText !== chosenName.replace(new RegExp("&" + "#" + "x27;", "g"), "'")) {
         return
     }
     let chosenServant = [];
@@ -254,28 +307,38 @@ function checkMatch() {
 
     attemptServants.push(chosenServant);
     insertNewServant(dailyServant, chosenServant);
-    if(dailyCollectionNum === chosenCollectionNum) {
+    if (dailyCollectionNum === chosenCollectionNum) {
         attemptsRemaining = 0;
         gameOver = true;
+        wins++;
     }
     else {
         attemptsRemaining -= 1;
-        if(attemptsRemaining === 0) {
+        if (attemptsRemaining === 0) {
             gameOver = true;
             insertNewServant(dailyServant, dailyServant);
-            attemptServants.push(dailyServant);        
+            attemptServants.push(dailyServant);
         }
     }
+    
     document.getElementById("myInput").value = ''
     checkGameStatus();
     localStorage.setItem("attemptsRemaining", attemptsRemaining);
     localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
-    localStorage.setItem("gameOver", gameOver)
+    localStorage.setItem("gameOver", gameOver);
+    if(attemptsRemaining === 0) {
+        games++;
+        localStorage.setItem("wins", wins);
+        localStorage.setItem("games", games);
+        if (token) {
+            await updateUser();
+        }
+    }
 }
 
 function compareServants(daily, chosen) {
     let p = document.createElement('p');
-    let color = daily === chosen ? "green": "red";
+    let color = daily === chosen ? "green" : "red";
     p.style.backgroundColor = color;
     p.innerHTML = String(chosen).toUpperCase();
     return p
@@ -284,15 +347,14 @@ function compareServants(daily, chosen) {
 function insertNewServant(daily, chosen) {
     let b = document.createElement('div');
     let element = document.getElementById('guessAttempts');
-    for(let i = 0; i < daily.length; i++) {
+    for (let i = 0; i < daily.length; i++) {
         b.append(compareServants(daily[i], chosen[i]));
     }
     element.appendChild(b)
 }
 
 function checkGameStatus() {
-    console.log(gameOver)
-    if(gameOver) {
+    if (gameOver) {
         showImage();
     }
 }
@@ -308,5 +370,187 @@ function getDate(today) {
 }
 
 function convertTZ(date, tzString) {
-    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
+}
+
+
+// notification function
+function snackMessage(message) {
+    var x = document.getElementById("snackbar");
+    x.className = "show";
+    x.innerHTML = message;
+    setTimeout(function () {
+        x.className = x.className.replace("show", "");
+    }, 2000);
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == signup) {
+        signup.style.display = "none";
+    }
+    if (event.target == login) {
+        document.getElementById("login-psw").value = "";
+        login.style.display = "none";
+    }
+}
+
+// Add 'submit' event handler
+login.addEventListener("submit", (event) => {
+    event.preventDefault();
+    login.style.display = "none";
+    userLogin();
+});
+
+signup.addEventListener("submit", (event) => {
+    if (validatePassword()) {
+        return
+    }
+    event.preventDefault();
+    createUser();
+    signup.style.display = "none";
+});
+
+var password = document.getElementById("password")
+var passwordConfirm = document.getElementById("passwordConfirm");
+
+function validatePassword() {
+    if (password.value != passwordConfirm.value) {
+        passwordConfirm.setCustomValidity("Passwords Don't Match");
+    } else {
+        passwordConfirm.setCustomValidity('');
+    }
+
+    return password.value != passwordConfirm.value
+}
+password.onchange = validatePassword;
+passwordConfirm.onkeyup = validatePassword;
+
+async function userLogin() {
+    let data = new FormData();
+    let email = document.getElementById("login-email").value;
+    let psw = document.getElementById("login-psw").value;
+
+    data.append("email", email);
+    data.append("password", psw);
+
+    await fetch(loginURL, {
+        method: "POST",
+        body: data
+    })
+        .then((response) => {
+            if (response.status === 201) {
+                return response.json();
+            }
+            else if (response.status === 401) {
+                snackMessage("Invalid Email");
+            }
+            else if (response.status === 403) {
+                snackMessage("Invalid password");
+            }
+        })
+        .then((data) => {
+            try {
+                token = data["token"];
+                localStorage.setItem("token", token);
+                if (token) {
+                    getUserInfo();
+                }
+            }
+            catch (TypeError) {
+                // no token
+            }
+        })
+
+}
+
+async function getUserInfo() {
+    await fetch(userDataURL, {
+        method: "GET",
+        headers: {
+            "x-access-token": token
+        }
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            userData = data;
+            localStorage.setItem("userData", JSON.stringify(userData));
+            wins = Math.max(wins, userData["wins"]);
+            games = Math.max(games, userData["games"]);
+            if(userData["date"] === date) {
+                if (!gameOver) {
+                    insertNewServant(dailyServant, dailyServant);
+                    attemptServants.push(dailyServant);
+                    checkGameStatus();
+                    localStorage.setItem("gameOver", gameOver);
+                    localStorage.setItem("wins", wins);
+                    localStorage.setItem("games", games);
+                    localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
+                }
+                gameOver = true;
+                userStatus();
+            }
+        });
+}
+
+async function createUser() {
+    let data = new FormData();
+    let email = document.getElementById("user-email").value;
+    let psw = document.getElementById("password").value;
+    let displayName = document.getElementById("display-name").value;
+
+    data.append("name", displayName);
+    data.append("email", email);
+    data.append("password", psw);
+
+    await fetch(signUpURL, {
+        method: "POST",
+        body: data
+    })
+        .then((response) => {
+            console.log(response.text())
+            if (response.status === 201) {
+                snackMessage("User created");
+            }
+            else if (response.status === 202) {
+                snackMessage("User exists. Please log in.")
+            }
+        })
+}
+
+async function updateUser() {
+    let data = new FormData();
+    data.append("wins", wins);
+    data.append("games", games);
+    data.append("date", date);
+    
+    await fetch(updateUserURL, {
+        method: "PUT",
+        headers: {
+            "x-access-token": token
+        },
+        body: data
+    })
+    .then((response) => response.json())
+}
+
+function userStatus() {
+    let buttonLogin = document.getElementById("login-button");
+    let buttonSignUp = document.getElementById("signup-button");
+    let welcomeMessage = document.getElementById("welcome-message");
+    let buttonLogout = document.getElementById("logout-button");
+
+    if(token) {
+        buttonLogin.style.visibility = "hidden";
+        buttonSignUp.style.visibility = "hidden";
+        welcomeMessage.style.visibility = "visible";
+        welcomeMessage.innerHTML = "Welcome " + userData["name"];
+        buttonLogout.style.visibility = "visible";
+    }
+}
+
+function userLogOut() {
+    localStorage.setItem("token", "");
+    location.reload();
 }
