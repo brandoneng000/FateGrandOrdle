@@ -40,11 +40,6 @@ function showImage() {
     image.src = dailyImage;
 }
 
-function changeToken() {
-    let test = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNfaWQiOiI3NzRjNzU4YS03ZjFmLTRiZDItODhiMS05ZDhiOWE4MjllNjgiLCJleHAiOjE1MTYyMzkwMjJ9.jg0UL8ENJfv-gCl4hmDyg0O4ba2V1aOyV2xN3xUNYJA";
-    localStorage.setItem("token", test);
-}
-
 async function initialize() {
     wins = parseInt(localStorage.getItem("wins"));
     if (isNaN(wins)) {
@@ -75,7 +70,7 @@ async function initialize() {
             
         })
         .then((data) => {
-            console.log(data["name"]);
+            // console.log(data["name"]);
         })
 
     }
@@ -294,7 +289,7 @@ async function checkMatch() {
         return;
     }
     checkText = document.getElementById("myInput").value
-    console.log(chosenName)
+    // console.log(chosenName)
     if (checkText !== chosenName.replace(new RegExp("&" + "#" + "x27;", "g"), "'")) {
         return
     }
@@ -354,8 +349,12 @@ function insertNewServant(daily, chosen) {
 }
 
 function checkGameStatus() {
+    let image = document.getElementById('servantImage');
     if (gameOver) {
         showImage();
+    }
+    else {
+        image.src = "/images/question.png";
     }
 }
 
@@ -473,19 +472,19 @@ async function getUserInfo() {
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
+            // console.log(data);
             userData = data;
             localStorage.setItem("userData", JSON.stringify(userData));
             wins = Math.max(wins, userData["wins"]);
             games = Math.max(games, userData["games"]);
+            localStorage.setItem("wins", wins);
+            localStorage.setItem("games", games);
             if(userData["date"] === date) {
                 if (!gameOver) {
                     insertNewServant(dailyServant, dailyServant);
                     attemptServants.push(dailyServant);
                     checkGameStatus();
                     localStorage.setItem("gameOver", gameOver);
-                    localStorage.setItem("wins", wins);
-                    localStorage.setItem("games", games);
                     localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
                 }
                 gameOver = true;
@@ -509,7 +508,7 @@ async function createUser() {
         body: data
     })
         .then((response) => {
-            console.log(response.text())
+            // console.log(response.text())
             if (response.status === 201) {
                 snackMessage("User created");
             }

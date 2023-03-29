@@ -93,7 +93,6 @@ div.guess {
 
 div.guess div{
     border: 2px solid white;
-    height: 100px;
     display: flex;
 }
 
@@ -107,6 +106,7 @@ div.guess p {
     vertical-align: middle; */
     align-items:center;
     justify-content:center;
+    text-align: center;
     
 }
 
