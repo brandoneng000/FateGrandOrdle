@@ -28,11 +28,18 @@ var signup = document.getElementById('signUp');
 var login = document.getElementById('login');
 var token;
 var userData;
-const loginURL = "http://127.0.0.1:5000/login";
-const userDataURL = "http://127.0.0.1:5000/user";
-const signUpURL = "http://127.0.0.1:5000/signup";
-const updateUserURL = "http://127.0.0.1:5000/user-update";
-const checkTokenURL = "http://127.0.0.1:5000/check-token";
+// const loginURL = "http://127.0.0.1:5000/login";
+// const userDataURL = "http://127.0.0.1:5000/user";
+// const signUpURL = "http://127.0.0.1:5000/signup";
+// const updateUserURL = "http://127.0.0.1:5000/user-update";
+// const checkTokenURL = "http://127.0.0.1:5000/check-token";
+
+const loginURL = "https://fgordle.pythonanywhere.com/login";
+const userDataURL = "https://fgordle.pythonanywhere.com/user";
+const signUpURL = "https://fgordle.pythonanywhere.com/signup";
+const updateUserURL = "https://fgordle.pythonanywhere.com/user-update";
+const checkTokenURL = "https://fgordle.pythonanywhere.com/check-token";
+
 
 function showImage() {
     let image = document.getElementById('servantImage');
@@ -487,8 +494,8 @@ async function getUserInfo() {
                     localStorage.setItem("attemptServants", JSON.stringify(attemptServants));
                 }
                 gameOver = true;
-                userStatus();
             }
+            userStatus();
         });
 }
 
