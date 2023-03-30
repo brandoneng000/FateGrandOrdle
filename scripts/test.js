@@ -191,8 +191,7 @@ function autocomplete(inp, arr) {
                 b.innerHTML += "<br><span class=\"extra-info\">| RARITY: " + servant["rarity"] +
                     "| CLASS: " + servant["class_name"].toUpperCase() +
                     "<br>| NP TYPE: " + servant['np_type'].toUpperCase() +
-                    " | NP EFFECT: " + effect +
-                    " | ID: " + servant["collection_no"] + "</span>"
+                    " | NP EFFECT: " + effect + "</span>"
                 /*execute a function when someone clicks on the item value (DIV element):*/
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
