@@ -196,7 +196,7 @@ function autocomplete(inp, arr) {
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + servantName.replace(/'/g, '&#x27;') + "'>";
                 b.innerHTML += "<br><span class=\"extra-info\">| RARITY: " + servant["rarity"] +
-                    "| CLASS: " + servant["class_name"].toUpperCase() +
+                    " | CLASS: " + servant["class_name"].toUpperCase() +
                     "<br>| NP TYPE: " + servant['np_type'].toUpperCase() +
                     " | NP EFFECT: " + effect + "</span>"
                 /*execute a function when someone clicks on the item value (DIV element):*/
